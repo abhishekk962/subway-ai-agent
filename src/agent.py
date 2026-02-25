@@ -51,20 +51,16 @@ def get_train_timings_for_stop_id(stop_id):
     response = requests.get(f"https://demo.transiter.dev/systems/us-ny-subway/stops/{stop_id}")
     result = response.json()
     stop_times = result['stopTimes']
-    timings = []
+    timings = "trip_id,train,headsign,arrival_time_in_mins\n"
     for stoptime in stop_times:
         trip = stoptime['trip']['id']
         train = stoptime['trip']['route']['id']
         headsign = stoptime['headsign']
         arrival_time_epoch = float(stoptime['arrival']['time'])
         arrival_time_in_mins = int((arrival_time_epoch - time.time()) // 60)
-        timings.append({
-            'trip_id': trip,
-            'train': train,
-            'headsign': headsign,
-            'arrival_time_in_mins': arrival_time_in_mins
-        })
-    return timings[:10]  # Return only the 10 most recent timings
+        if arrival_time_in_mins >= 0 and arrival_time_in_mins < 30:  # Only include upcoming trains within 100 minutes
+            timings += f"{trip},{train},{headsign},{arrival_time_in_mins}\n"
+    return timings
 
 
 def get_timings_for_train_trip(train_line, trip_id):
@@ -75,7 +71,7 @@ def get_timings_for_train_trip(train_line, trip_id):
         f"https://demo.transiter.dev/systems/us-ny-subway/routes/{train_line}/trips/{trip_id}"
     )
     result = response.json()
-    timings = []
+    timings = "stop_name,arrival_time_in_mins,arrival_time_formatted\n"
     for stoptime in result["stopTimes"]:
         stop_name = stoptime["stop"]["name"]
         arrival_time_epoch = float(stoptime["arrival"]["time"])
@@ -83,13 +79,7 @@ def get_timings_for_train_trip(train_line, trip_id):
         arrival_time_hh_mm = time.strftime(
             "%I:%M %p", time.localtime(arrival_time_epoch)
         )
-        timings.append(
-            {
-                "stop_name": stop_name,
-                "arrival_time_in_mins": arrival_time_in_mins,
-                "arrival_time_formatted": arrival_time_hh_mm,
-            }
-        )
+        timings += f"{stop_name},{arrival_time_in_mins},{arrival_time_hh_mm}\n"
     return timings
 
 
