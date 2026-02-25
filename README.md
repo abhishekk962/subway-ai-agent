@@ -2,6 +2,16 @@
 
 This repository contains detailed instructions on how to build a Subway AI Agent capable of handling complex queries related to real-time train arrivals.
 
+<p align="center">
+  <img 
+    width="200" 
+    height="auto" 
+    alt="image" 
+    src="https://github.com/user-attachments/assets/0ecc14ca-9cd1-4703-a6e3-3279e5e224c1"
+    style="border-radius:50%;"
+  />
+</p>
+
 ## Overview
 
 - **`agent.ipynb`**: A Python notebook that provides an overview of how the agent is built.
